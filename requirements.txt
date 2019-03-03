@@ -1,0 +1,4 @@
+Django==2.1.4
+redis==2.10.6
+celery==4.2.1
+pillow==5.4.1

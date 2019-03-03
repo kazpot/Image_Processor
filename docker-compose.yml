@@ -1,0 +1,50 @@
+version: '3'
+volumes:
+    shared-data:
+services:
+    rabbit:
+        hostname: rabbit
+        image: rabbitmq
+        container_name: mq
+        environment:
+            - RABBITMQ_DEFAULT_USER=admin
+            - RABBITMQ_DEFAULT_PASS=mypass
+        expose:
+            - "5672"
+        ports:
+            - "5672:5672"
+
+    redis:
+        hostname: redis
+        image: redis
+        container_name: db
+        expose:
+            - "6379"
+        ports:
+            - "6379:6379"
+
+    web:
+      image: web
+      container_name: web
+      volumes:
+          - shared-data:/app/storage
+      ports:
+          - "8000:8000"
+      links:
+          - rabbit
+          - redis
+      depends_on:
+          - rabbit
+          - redis
+
+    celery:
+        image: celery
+        container_name: celery
+        volumes:
+            - shared-data:/app/storage
+        links:
+            - rabbit
+            - redis
+        depends_on:
+            - rabbit
+            - redis
